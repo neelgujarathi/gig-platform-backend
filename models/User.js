@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true }
 });
 
-// ✅ FIXED: include "next" as argument here
 userSchema.pre("save", async function (next) {
   try {
     if (!this.isModified("password")) return next();
@@ -15,7 +14,7 @@ userSchema.pre("save", async function (next) {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
   } catch (error) {
-    next(error); // ✅ if error occurs, pass to next()
+    next(error);
   }
 });
 

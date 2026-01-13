@@ -1,4 +1,3 @@
-// backend/routes/gigs.js
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
@@ -6,7 +5,7 @@ const Gig = require("../models/Gig");
 const Bid = require("../models/Bid");
 const { protect } = require("../middleware/auth");
 
-// ✅ Fetch all bids made by the logged-in freelancer
+// Fetch all bids made by the logged-in freelancer
 router.get("/my-bids", protect, async (req, res) => {
   try {
     const bids = await Bid.find({ freelancerId: req.user._id }).populate("gigId");
@@ -20,7 +19,7 @@ router.get("/my-bids", protect, async (req, res) => {
   }
 });
 
-// ✅ Create a new gig (Client only)
+// Create a new gig (Client only)
 router.post("/", protect, async (req, res) => {
   const { title, description, budget } = req.body;
   try {
@@ -36,7 +35,7 @@ router.post("/", protect, async (req, res) => {
   }
 });
 
-// ✅ Get all "open" gigs with optional search
+// Get all "open" gigs with optional search
 router.get("/", async (req, res) => {
   try {
     const search = req.query.search || "";
@@ -50,7 +49,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ Edit gig (only owner)
+// Edit gig (only owner)
 router.put("/:id", protect, async (req, res) => {
   const { title, description, budget } = req.body;
   try {
@@ -70,7 +69,7 @@ router.put("/:id", protect, async (req, res) => {
   }
 });
 
-// ✅ Delete gig (only owner)
+// Delete gig (only owner)
 router.delete("/:id", protect, async (req, res) => {
   try {
     const gig = await Gig.findById(req.params.id);
@@ -85,7 +84,7 @@ router.delete("/:id", protect, async (req, res) => {
   }
 });
 
-// ✅ Get single gig details (populate hiredFreelancer) — always last
+// Get single gig details (populate hiredFreelancer) — always last
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;

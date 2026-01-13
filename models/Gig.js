@@ -6,7 +6,7 @@ const gigSchema = new mongoose.Schema({
   budget: Number,
   ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   status: { type: String, default: "open" },
-  hiredFreelancer: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // ✅ add this
+  hiredFreelancer: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
 module.exports = mongoose.model("Gig", gigSchema);
