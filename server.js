@@ -16,10 +16,12 @@ connectDB();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-  origin: process.env.CLIENT_URL, // Render frontend URL later
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL, // must match your frontend Render URL
+    credentials: true, // allow cookies
+  })
+);
 
 // ---------- HTTP + Socket.io ----------
 const server = http.createServer(app);
