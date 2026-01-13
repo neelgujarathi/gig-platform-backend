@@ -4,7 +4,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { protect } = require("../middleware/auth");
 
-// Helper to create JWT cookie
+// ✅ Helper to create JWT cookie (fixed for Render HTTPS)
 const createTokenCookie = (res, userId) => {
   const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     expiresIn: "7d",
@@ -12,8 +12,9 @@ const createTokenCookie = (res, userId) => {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,           // ✅ always true for Render (HTTPS)
+    sameSite: "none",       // ✅ allow cross-origin cookies
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 };
 
@@ -29,6 +30,7 @@ router.post("/register", async (req, res) => {
 
     const user = await User.create({ name, email, password });
 
+    // ✅ set cookie properly
     createTokenCookie(res, user._id);
 
     res.status(201).json({ user });
@@ -53,6 +55,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    // ✅ set cookie properly
     createTokenCookie(res, user._id);
 
     res.json({ user });
@@ -62,6 +65,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// ---------------- CURRENT USER ----------------
 router.get("/me", protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
@@ -71,8 +75,15 @@ router.get("/me", protect, async (req, res) => {
   }
 });
 
+// ---------------- LOGOUT ----------------
 router.post("/logout", (req, res) => {
-  res.cookie("token", "", { maxAge: 0 });
+  res.cookie("token", "", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 0,
+  });
   res.json({ message: "Logged out" });
 });
+
 module.exports = router;
